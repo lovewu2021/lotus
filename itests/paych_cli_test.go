@@ -66,6 +66,14 @@ func TestPaymentChannelsBasic(t *testing.T) {
 	vamt := strconv.Itoa(voucherAmt)
 	voucher := creatorCLI.RunCmd("paych", "voucher", "create", chAddr.String(), vamt)
 
+	// DEFLAKE: We have observed this test flakily failing when the receiver node hasn't seen the paych create message
+	// This en
+	_, err = paymentReceiver.StateLookupID(ctx, chAddr, types.EmptyTSK)
+	for err != nil {
+		time.Sleep(blocktime)
+		_, err = paymentReceiver.StateLookupID(ctx, chAddr, types.EmptyTSK)
+	}
+
 	// receiver: paych voucher add <channel> <voucher>
 	receiverCLI.RunCmd("paych", "voucher", "add", chAddr.String(), voucher)
 
