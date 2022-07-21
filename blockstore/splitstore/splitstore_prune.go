@@ -8,12 +8,11 @@ import (
 	"sync/atomic"
 	"time"
 
-	"go.opencensus.io/stats"
-	"golang.org/x/xerrors"
-
 	cid "github.com/ipfs/go-cid"
 	ipld "github.com/ipfs/go-ipld-format"
 	cbg "github.com/whyrusleeping/cbor-gen"
+	"go.opencensus.io/stats"
+	"golang.org/x/xerrors"
 
 	bstore "github.com/filecoin-project/lotus/blockstore"
 	"github.com/filecoin-project/lotus/build"
@@ -334,7 +333,7 @@ func (s *SplitStore) doPrune(curTs *types.TipSet, retainStateP func(int64) bool,
 	if err := os.Remove(s.pruneCheckpointPath()); err != nil {
 		log.Warnf("error removing checkpoint: %s", err)
 	}
-	if deadr.Close(); err != nil {
+	if err := deadr.Close(); err != nil {
 		log.Warnf("error closing deadset: %s", err)
 	}
 	if err := os.Remove(s.deadSetPath()); err != nil {
@@ -389,7 +388,7 @@ func (s *SplitStore) completePrune() error {
 	if err := os.Remove(s.pruneCheckpointPath()); err != nil {
 		log.Warnf("error removing checkpoint: %s", err)
 	}
-	if deadr.Close(); err != nil {
+	if err := deadr.Close(); err != nil {
 		log.Warnf("error closing deadset: %s", err)
 	}
 	if err := os.Remove(s.deadSetPath()); err != nil {
